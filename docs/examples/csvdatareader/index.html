@@ -433,6 +433,23 @@ using (var csv = new CsvReader(reader, CultureInfo.InvariantCulture))
 	}
 }
 </code></pre>
+<p>You can write to a CSV file from the DataTable simply using a custom IEnumerable</p>
+<pre><code class="language-cs">
+using (StreamWriter writer = new((_layer as RecordSet).Source))
+using (CsvWriter csv = new(writer, CultureInfo.InvariantCulture)) {
+        csv.WriteRecords(Records(dataTable));
+}
+
+private IEnumerable<dynamic> Records(DataTable dataTable) {
+    foreach (DataRow row in dataTable.Rows) {
+        var record = new ExpandoObject() as IDictionary<string, object>;
+        foreach(DataColumn col in features.Columns) {
+        	record.Add(col.ColumnName, row[col]);
+        }
+        yield return record;
+    }
+}
+</code></pre>
 
 					</div>
 				</div>
